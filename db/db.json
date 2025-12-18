@@ -1,0 +1,42 @@
+[
+    {
+        "id": "957a5c11-6e9b-4def-88ed-91ac811fcaf9",
+        "creationAt": "2025-12-18T11:29:29.348Z",
+        "users": [
+            "lmammino",
+            "luduvigo",
+            "pfuhrmann"
+        ],
+        "numberOfUsers": 3
+    },
+    {
+        "id": "7b9acdb7-e026-46d1-9022-fd32dc0e4225",
+        "creationAt": "2025-12-18T11:29:37.651Z",
+        "users": [
+            "lmammino",
+            "luduvigo",
+            "pfuhrmann"
+        ],
+        "numberOfUsers": 3
+    },
+    {
+        "id": "a89fd446-c969-47d9-9ad9-50f670105846",
+        "creationAt": "2025-12-18T11:30:55.179Z",
+        "users": [
+            "lmammino",
+            "luduvigo",
+            "pfuhrmann"
+        ],
+        "numberOfUsers": 3
+    },
+    {
+        "id": "ea05e0dd-9e27-4cd2-88d8-254140117878",
+        "creationAt": "2025-12-18T11:31:09.671Z",
+        "users": [
+            "lmammino",
+            "luduvigo",
+            "pfuhrmann"
+        ],
+        "numberOfUsers": 3
+    }
+]
