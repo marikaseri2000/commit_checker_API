@@ -2,73 +2,54 @@ import datetime
 import uuid
 import os
 import json
+from dotenv import load_dotenv
+from requests import get, Response
 
-DATA: list[dict]= [
-  {
-    "login": "lmammino",
-    "id": 205629,
-    "node_id": "MDQ6VXNlcjIwNTYyOQ==",
-    "avatar_url": "https://avatars.githubusercontent.com/u/205629?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/lmammino",
-    "html_url": "https://github.com/lmammino",
-    "followers_url": "https://api.github.com/users/lmammino/followers",
-    "following_url": "https://api.github.com/users/lmammino/following{/other_user}",
-    "gists_url": "https://api.github.com/users/lmammino/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/lmammino/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/lmammino/subscriptions",
-    "organizations_url": "https://api.github.com/users/lmammino/orgs",
-    "repos_url": "https://api.github.com/users/lmammino/repos",
-    "events_url": "https://api.github.com/users/lmammino/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/lmammino/received_events",
-    "type": "User",
-    "user_view_type": "public",
-    "site_admin": False
-  },
-  {
-    "login": "luduvigo",
-    "id": 1569913,
-    "node_id": "MDQ6VXNlcjE1Njk5MTM=",
-    "avatar_url": "https://avatars.githubusercontent.com/u/1569913?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/luduvigo",
-    "html_url": "https://github.com/luduvigo",
-    "followers_url": "https://api.github.com/users/luduvigo/followers",
-    "following_url": "https://api.github.com/users/luduvigo/following{/other_user}",
-    "gists_url": "https://api.github.com/users/luduvigo/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/luduvigo/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/luduvigo/subscriptions",
-    "organizations_url": "https://api.github.com/users/luduvigo/orgs",
-    "repos_url": "https://api.github.com/users/luduvigo/repos",
-    "events_url": "https://api.github.com/users/luduvigo/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/luduvigo/received_events",
-    "type": "User",
-    "user_view_type": "public",
-    "site_admin": False
-  },
-  {
-    "login": "pfuhrmann",
-    "id": 1627445,
-    "node_id": "MDQ6VXNlcjE2Mjc0NDU=",
-    "avatar_url": "https://avatars.githubusercontent.com/u/1627445?v=4",
-    "gravatar_id": "",
-    "url": "https://api.github.com/users/pfuhrmann",
-    "html_url": "https://github.com/pfuhrmann",
-    "followers_url": "https://api.github.com/users/pfuhrmann/followers",
-    "following_url": "https://api.github.com/users/pfuhrmann/following{/other_user}",
-    "gists_url": "https://api.github.com/users/pfuhrmann/gists{/gist_id}",
-    "starred_url": "https://api.github.com/users/pfuhrmann/starred{/owner}{/repo}",
-    "subscriptions_url": "https://api.github.com/users/pfuhrmann/subscriptions",
-    "organizations_url": "https://api.github.com/users/pfuhrmann/orgs",
-    "repos_url": "https://api.github.com/users/pfuhrmann/repos",
-    "events_url": "https://api.github.com/users/pfuhrmann/events{/privacy}",
-    "received_events_url": "https://api.github.com/users/pfuhrmann/received_events",
-    "type": "User",
-    "user_view_type": "public",
-    "site_admin": False
-  }
-  ]
+#il TOKEN non deve essere pushato
 
+load_dotenv()
+base_url = os.getenv("BASE_URL")
+URL = os.getenv("URL")
+github_token = os.getenv("GITHUB_TOKEN")
+
+def costruisci_github_headers(token:str)->dict:
+    return {
+            "Authorization": f"Bearer{token}",
+            "X-GitHub-Api-Version": "2022-11-28"
+    }   
+
+def create_users_page(url: str, page:int, headers:dict)->Response:
+    return get(f"{url}?page={page}", headers=headers)
+
+def has_next_page(response: Response) -> bool:
+    """Verifica che esiste un'altra pagina per prendere i follower"""
+    link_headers=response.headers.get("Link","")
+    return "next" in link_headers              #è un dizionario e a Link devi accedere in questo modo
+
+def get_all_follower_from_pages(username: str)->list[dict]:
+    """Prende tutte le pagine e ne restitusce la lista accorpata"""
+    url = f"{base_url}/users/{username}/followers"
+    page:int=1
+    users: list=[]
+
+    while True:
+        print(f"Sto contattando la pagina: {page}")
+        response: list[dict]=fetch_users(url, page)
+        users.extend(response.json())
+
+        if not has_next_page(response):
+            break
+
+        page = page + 1
+
+    return users
+
+def fetch_users(URL_users:str, page: int) -> list[dict]:
+    """Esegue la chiamata per prendere tutti i dati dal server."""
+    headers=costruisci_github_headers(github_token)
+    return has_next_page(create_users_page(URL_users, page, headers))
+    
+    
 def exstract_usernames(users: list[dict])->list[str]:
     """Estrae la lista degli ustenti dalla lista di dizionari generata da create_record."""
     usernames: list[str]=[]
@@ -121,10 +102,14 @@ def save_json_db(db_name: str, record: dict) -> None:
 
 def main()-> None:
     print("Inizio programma")
+    
+    """
     lista_test=exstract_usernames(DATA)
     record=create_record(lista_test)
     save_json_db("db/db.json", record)
-    
+    """
+    data= get_all_follower_from_pages("emanuelegurini")
+    print(exstract_usernames(data))
 
 if __name__ == "__main__":
     main()
