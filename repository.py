@@ -3,7 +3,6 @@ import json
 import os
 import uuid
 
-
 def create_record(usernames:list[str]) -> dict:
     """Crea un nuovo oggetto record da salvare nel db"""
     now_utc = datetime.datetime.now(datetime.timezone.utc)
@@ -26,11 +25,11 @@ def create_json_db(db_name: str) -> bool:
 def save_json_db(db_name: str, record: dict) -> None:
     """Salva il nuovo oggetto nel db."""
     if not check_if_json_db_has_correct_shape(db_name):   #utile a vedere se esiste
-        create_json_db(db_name)
+        create_json_db(db_name)                           #creiamo uno nuovo
     
     db:list[dict]=[]                                     #una lista temporanea nella funzione
     with open(db_name, 'r') as f:
-        db.extend(json.load(f))
+        db.extend(json.load(f))                          #preleva il contenutoi
     db.append(record)                                    #aggiunge i dati
     with open(db_name, "w", encoding='utf-8') as f:
         json.dump(db, f, indent=4,ensure_ascii=False)    #sovrascriviamo i dati nel db
@@ -45,3 +44,10 @@ def check_if_json_db_has_correct_shape(db_name: str) -> bool:
         data=json.load(f)                              #import json
         return isinstance(data, list)                  #ci restituisce un valore bool
 
+def get_data_from_db(db_name: str) -> list[dict]:
+    """Prende tutto il contenuto del bd e lo restituisce."""
+    if not check_if_json_db_has_correct_shape(db_name):   
+        create_json_db(db_name)
+    
+    with open(db_name, 'r') as f:
+        return json.load(f)

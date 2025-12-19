@@ -1,9 +1,11 @@
 import json
 import re
+from client_gemini import get_start_from_gemini
 from client_github import fetch_users
 from config import base_url
 from requests import RequestException, Response
-from repository import create_record, save_json_db
+from repository import create_record, save_json_db, get_data_from_db
+
 
 def get_followers() -> None:
     try:
@@ -79,3 +81,12 @@ def get_all_follower_from_pages(username: str)->list[dict]:
         page = page + 1
 
     return users
+
+def get_statistiche() -> None:
+    """
+    1. venga preso il file dal db con tutte le statistiche
+    2. vengo mandato al gemini attraverso le sue api
+    """
+    print("Hai scelto di prendere le statistiche!")
+    db_content=get_data_from_db("db/db.json")
+    get_start_from_gemini(db_content)

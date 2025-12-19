@@ -1,5 +1,5 @@
 from console import print_menu
-from service import get_followers
+from service import get_followers, get_statistiche
 
 def main()-> None:
     while True:
@@ -9,6 +9,7 @@ def main()-> None:
             case "1":
                 get_followers()
             case "2":
+                get_statistiche()
                 print("Hai scelto di prendere le statistiche!")
             case "3":
                 print("Hai scelto di prendere i dati di un giorno specifico!")
