@@ -2,7 +2,7 @@ from google import genai
 from config import gemini_api_key
 
 client = genai.Client(api_key=gemini_api_key)
-
+#now
 def get_start_from_gemini(data: list)-> None:
     response = client.models.generate_content_stream(
         model="gemini-3-flash-preview",
